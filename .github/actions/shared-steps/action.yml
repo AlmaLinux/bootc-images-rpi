@@ -43,10 +43,11 @@ runs:
         #   125 - tag/platform not found
         #   127 - command not found
         res=0
-        if [ "${{ github.event_name }}" == "pull_request" ]; then
-          exit 100
+        if [ "${{ github.event_name }}" != "pull_request" ]; then
+          sudo podman run ${{ env.VARIANT }} --quiet --rm ${{ inputs.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ inputs.VERSION_MAJOR }} dnf check-update || res=$?
+        else
+          res=100
         fi
-        sudo podman run ${{ env.VARIANT }} --quiet --rm ${{ inputs.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ inputs.VERSION_MAJOR }} dnf check-update || res=$?
         echo "res=${res}" >> "$GITHUB_ENV"
         echo "Exit code: '$res'"
 
