@@ -231,17 +231,6 @@ runs:
         retention-days: 1
         if-no-files-found: error
 
-    - name: Upload Container Image Artifacts
-      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-      if: ${{ github.event_name == 'pull_request' }}
-      env:
-        SUFFIX: ${{ steps.suffix.outputs.suffix }}
-      with:
-        name: image-${{ env.IMAGE_NAME }}-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}${{ env.SUFFIX}}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.tar
-        path: /tmp/image-${{ env.IMAGE_NAME }}-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}${{ env.SUFFIX}}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.tar
-        retention-days: 1
-        if-no-files-found: error
-
     - name: Upload Bootstrap Image Artifacts
       uses: actions/upload-artifact@v4
       if: ${{ github.event_name == 'pull_request' }}

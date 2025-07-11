@@ -1,4 +1,4 @@
-# AlmaLinux Bootable Container Base Images (bootc)
+# AlmaLinux Bootable Container Base Images for RPI (bootc)
 
 **<ins>Caution</ins>: AlmaLinux bootc images are currently *experimental*. Please use with care and report any issues.**
 
@@ -14,6 +14,7 @@ Our images are based on the work done for [CentOS Bootc Base Images](https://git
 
 ## Project Status & News
 
+* **[2025-06-10]** Forked repo for RPI specific images
 * **[2024-09-02]** AlmaLinux announces experimental bootc support and HeliumOS: [Read the blog post](https://almalinux.org/blog/2024-09-02-bootc-almalinux-heliumos/)
 * For the latest general information about AlmaLinux, visit [almalinux.org](https://almalinux.org/get-almalinux/).
 
