@@ -2,6 +2,8 @@ name: Build
 on:
   pull_request:
     types: [synchronize, opened, reopened]
+  release:
+    types: [published]
   workflow_dispatch:
     inputs:
       RELEASE:
@@ -41,6 +43,9 @@ jobs:
           # Format json for versions matrix
           case ${{ github.event_name }} in
             pull_request)
+              echo "matrix=$(jq -c <<< '[${{ env.VERSIONS_LIST }}]')" >> $GITHUB_OUTPUT
+              ;;
+            release)
               echo "matrix=$(jq -c <<< '[${{ env.VERSIONS_LIST }}]')" >> $GITHUB_OUTPUT
               ;;
             workflow_dispatch)
@@ -99,21 +104,26 @@ jobs:
         REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
 
   release:
-    #FIXME
-    if: ${{ github.event_name == 'pull_request' }}
+    if: github.event_name == 'release' && github.event.action == 'published'
     name: Release
+    permissions:
+      contents: write
     needs: [set-versions-matrix, build]
     runs-on: ubuntu-24.04
     steps:
       - name: Fetch Build Outputs
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
-          pattern: image-*.tar
+          pattern: image-*.raw
           merge-multiple: true
           path: /tmp/artifacts
       - run: |
           ls -l /tmp/artifacts
-
+      - name: Upload Release Artifacts
+        id: upload-release-artifacts
+        uses: softprops/action-gh-release@v1
+        with:
+          files: /tmp/artifacts/*
   push-manifest:
     if: ${{ always() && contains(join(needs.*.result, ','), 'success') && github.event_name != 'pull_request' }}
     name: Push manifest

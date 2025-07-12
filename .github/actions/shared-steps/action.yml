@@ -29,7 +29,7 @@ runs:
         echo "CLEAN_ARCH=${ARCH//\//_}" >> "$GITHUB_ENV"
 
     - name: Log in to registry
-      if: github.event_name != 'pull_request'
+      if: github.event_name != 'pull_request' && github.event_name != 'release'
       shell: bash
       run: sudo podman login ${{ inputs.IMAGE_REGISTRY }} -u ${{ inputs.REGISTRY_USER }} -p ${{ inputs.REGISTRY_PASSWORD }}
 
@@ -43,7 +43,7 @@ runs:
         #   125 - tag/platform not found
         #   127 - command not found
         res=0
-        if [ "${{ github.event_name }}" != "pull_request" ]; then
+        if [ "${{ github.event_name }}" != "pull_request" -a "${{ github.event_name }}" != "release" ]; then
           sudo podman run ${{ env.VARIANT }} --quiet --rm ${{ inputs.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ inputs.VERSION_MAJOR }} dnf check-update || res=$?
         else
           res=100
@@ -111,7 +111,7 @@ runs:
 
     - name: Build Image Tars
       id: tars
-      if: github.event_name == 'pull_request'
+      if: github.event_name == 'pull_request' || github.event_name == 'release' 
       shell: bash
       env:
         IMAGE_ID: ${{ steps.rechunk.outputs.image-id }}
@@ -125,7 +125,7 @@ runs:
 
     - name: Build os image
       shell: bash
-      if: github.event_name == 'pull_request'
+      if: github.event_name == 'pull_request' || github.event_name == 'release'
       env:
         IMAGE_ID: ${{ steps.rechunk.outputs.image-id }}
       run: |
@@ -188,7 +188,7 @@ runs:
 
     - name: Push to registry
       id: push
-      if: ${{ (env.res != 0 || github.event_name == 'workflow_dispatch') && github.event_name != 'pull_request' }}
+      if: ${{ (env.res != 0 || github.event_name == 'workflow_dispatch') && github.event_name != 'pull_request' && github.event_name != 'release' }}
       env:
         IMAGE_ID: ${{ steps.rechunk.outputs.image-id }}
         VERSION: ${{ steps.run.outputs.version-id }}
@@ -224,7 +224,7 @@ runs:
 
     - name: Upload Container Image Artifacts
       uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-      if: ${{ github.event_name == 'pull_request' }}
+      if: ${{ github.event_name == 'pull_request' || github.event_name == 'release' }}
       with:
         name: image-${{ env.IMAGE_NAME }}-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.tar
         path: /tmp/image-${{ env.IMAGE_NAME }}-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.tar
@@ -233,7 +233,7 @@ runs:
 
     - name: Upload Bootstrap Image Artifacts
       uses: actions/upload-artifact@v4
-      if: ${{ github.event_name == 'pull_request' }}
+      if: ${{ github.event_name == 'pull_request' || github.event_name == 'release' }}
       with:
         name: image-${{ env.IMAGE_NAME }}-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}${{ env.SUFFIX}}5-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw
         path: /tmp/image-${{ env.IMAGE_NAME }}-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}${{ env.SUFFIX}}5-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw
