@@ -10,7 +10,7 @@ Official pre-built experimental images are available on Quay.io:
 
 This project provides tooling to build experimental AlmaLinux bootable container images. These images leverage the [bootc project](https://containers.github.io/bootc/), which enables the creation of bootable OS images from container images.
 
-Our images are based on the work done for [CentOS Bootc Base Images](https://gitlab.com/redhat/centos-stream/containers/bootc/-/tree/c10s?ref_type=heads) and utilize [bootc-base-imagectl](https://gitlab.com/fedora/bootc/base-images/-/blob/main/bootc-base-imagectl.md?ref_type=heads) for their construction.
+Our images are based on the work done for [CentOS Bootc Base Images](https://gitlab.com/redhat/centos-stream/containers/bootc/-/tree/c10s?ref_type=heads), [AlmaLinux Bootc Base Images](https://github.com/almalinux/bootc-images) and utilize [bootc-base-imagectl](https://gitlab.com/fedora/bootc/base-images/-/blob/main/bootc-base-imagectl.md?ref_type=heads) for their construction.
 
 ## Current Limitations
 
@@ -55,6 +55,7 @@ The following examples demonstrate how to build specific variants:
 ```bash
 make \
   PLATFORM=linux/arm64 \
+  VARIANT=rpi \
   IMAGE_NAME=almalinux-bootc-rpi \
   VERSION_MAJOR=10-kitten-rpi
 ```
@@ -64,6 +65,7 @@ make \
 ```bash
 make \
   PLATFORM=linux/arm64 \
+  VARIANT=rpi \
   IMAGE_NAME=almalinux-bootc-rpi \
   VERSION_MAJOR=10-rpi
 ```
@@ -73,6 +75,7 @@ make \
 ```  
 make \  
   PLATFORM=linux/arm64 \
+  VARIANT=rpi \
   IMAGE_NAME=almalinux-bootc-rpi \
   VERSION_MAJOR=9-rpi
 ```
@@ -80,7 +83,8 @@ make \
 **Explanation of Build Variables:**
 
 * `PLATFORM`: Specifies the target architecture and variant (e.g., linux/arm64).
-* `IMAGE_NAME`: The base name for the output container image. (e.g. almalinux-bootc-rpi)
+* `VARIANT`: Which variant to build. (e.g. rpi).
+* `IMAGE_NAME`: The base name for the output container image. (e.g. almalinux-bootc-rpi).
 * `VERSION_MAJOR`: The AlmaLinux major version (e.g., 9-rpi, 10-rpi, 10-kitten-rpi).
 
 ## Contributing and Community
