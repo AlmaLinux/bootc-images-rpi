@@ -16,8 +16,8 @@ on:
           - 'ALL'
 
   schedule:
-    # run every day at 03:00 UTC
-    - cron:  '00 03 * * *'
+    # run every day at 01:00 UTC
+    - cron:  '00 01 * * *'
 
 env:
   LATEST_MAJOR: 9
