@@ -124,6 +124,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: /tmp/artifacts/*
+
   push-manifest:
     if: ${{ always() && contains(join(needs.*.result, ','), 'success') && github.event_name != 'pull_request'  && github.event_name != 'release' }}
     name: Push manifest
