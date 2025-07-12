@@ -30,6 +30,32 @@ Issues:
 * the initial setup requires more steps that necessary. We can make it smoother in the future
 * because of the firmware issue, bootc-image-builder alone isn't enough to build a raw boot image
 
+## Install Instructions
+
+Download and extract an image from Releases.
+
+Flash it to an m.2 drive, sd card, or usb device.
+
+You can then look at the README.txt on the storage device along with customizing user-data as needed.
+
+Move the storage device to the Pi.
+
+Boot it for the first time with a monitor and keyboard attached, as you will need to do a bit of initial setup.
+
+When it starts, press `ESC` to get into the UEFI menu.
+
+Select `Device Manager`
+
+Select `Raspberry Pi Configuration`
+
+Select `ACPI / Device Tree`
+
+Change `System Table Mode` to `Device Tree`
+
+Back out, save the config and reset the pi.
+
+You should now have a bootable system.
+
 ## Project Status & News
 
 * **[2025-06-10]** Forked repo for RPI specific images
