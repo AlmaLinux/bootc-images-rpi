@@ -12,13 +12,29 @@ This project provides tooling to build experimental AlmaLinux bootable container
 
 Our images are based on the work done for [CentOS Bootc Base Images](https://gitlab.com/redhat/centos-stream/containers/bootc/-/tree/c10s?ref_type=heads) and utilize [bootc-base-imagectl](https://gitlab.com/fedora/bootc/base-images/-/blob/main/bootc-base-imagectl.md?ref_type=heads) for their construction.
 
+## Current Limitations
+
+As an early and experimental project, we have not solved all problems with running AlmaLinux bootc images on the Raspberry Pis yet.
+
+The project can be useful to folks despite these limitations for some use cases.
+
+Things that work:
+* installing the raw base image onto a rpi.
+* building your own custom images based on the AlmaLinux RPI bootc image.
+* switching the rpi to a custom image with a similar kernel to one the raw base image contained
+
+Issues:
+* firmware updating - You may need to perform some manual steps or reimage the pi
+* devicetree management - the one that comes with the raw base image is used. When upgrading, it may need to be manually updated
+* raw base image is only supported on rpi5 so far
+* the initial setup requires more steps that necessary. We can make it smoother in the future
+* because of the firmware issue, bootc-image-builder alone isn't enough to build a raw boot image
+
 ## Project Status & News
 
 * **[2025-06-10]** Forked repo for RPI specific images
 * **[2024-09-02]** AlmaLinux announces experimental bootc support and HeliumOS: [Read the blog post](https://almalinux.org/blog/2024-09-02-bootc-almalinux-heliumos/)
 * For the latest general information about AlmaLinux, visit [almalinux.org](https://almalinux.org/get-almalinux/).
-
-
 
 ## Building Images (Advanced)
 
@@ -52,7 +68,6 @@ make \
   VERSION_MAJOR=10-rpi
 ```
 
-  
 ### Example: AlmaLinux 9 (arm64)
 
 ```  
