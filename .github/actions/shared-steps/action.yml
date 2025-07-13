@@ -176,6 +176,8 @@ runs:
         sudo mount ${LOOP}p1 /tmp/mnt && \
         sudo touch /tmp/mnt/meta-data && \
         sudo cp config.txt /tmp/mnt && \
+        sudo apt update && \
+        sudo apt install -y dos2unix && \
         sudo unix2dos /tmp/mnt/config.txt && \
         sudo cp $(pwd)/${{ inputs.VERSION_MAJOR }}-rpi/bootstrap-image/user-data /tmp/mnt/ && \
         sudo cp $(pwd)/${{ inputs.VERSION_MAJOR }}-rpi/bootstrap-image/README.txt /tmp/mnt/ && \
@@ -190,7 +192,6 @@ runs:
         curl -o uboot.tar.bz2 https://ftp.denx.de/pub/u-boot/u-boot-2025.07.tar.bz2 && \
         tar -jxf uboot.tar.bz2 && \
         cd u-boot-2025.07/ && \
-        sudo apt update && \
         sudo apt install -y libgnutls28-dev && \
         make rpi_arm64_defconfig && \
         make && \
