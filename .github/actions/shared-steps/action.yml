@@ -176,6 +176,7 @@ runs:
         sudo mount ${LOOP}p1 /tmp/mnt && \
         sudo touch /tmp/mnt/meta-data && \
         sudo cp config.txt /tmp/mnt && \
+        sudo unix2dos /tmp/mnt/config.txt && \
         sudo cp $(pwd)/${{ inputs.VERSION_MAJOR }}-rpi/bootstrap-image/user-data /tmp/mnt/ && \
         sudo cp $(pwd)/${{ inputs.VERSION_MAJOR }}-rpi/bootstrap-image/README.txt /tmp/mnt/ && \
         cd /tmp && \

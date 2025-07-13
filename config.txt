@@ -3,3 +3,7 @@
 
 [pi4]
 arm_boost=1
+
+[all]
+# enable serial console
+enable_uart=1
