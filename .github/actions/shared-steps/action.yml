@@ -186,8 +186,8 @@ runs:
           localhost/${{ env.IMAGE_NAME }}:${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }} \
           -c "cp -a --no-preserve=links /usr/share/raspberrypi2-kernel*/*/boot/*.dtb /tmp/ && cp -a --no-preserve=links /usr/share/raspberrypi2-kernel*/*/boot/* /tmp/" && \
         curl -o uboot.tar.bz2 https://ftp.denx.de/pub/u-boot/u-boot-2025.07.tar.bz2 && \
-        tar -jxvf uboot.tar.bz2 && \
-        cd u-boot-u-boot-2025.07/ && \
+        tar -jxf uboot.tar.bz2 && \
+        cd u-boot-2025.07/ && \
         make rpi_arm64_defconfig && \
         make && \
         ls -l && \
