@@ -196,7 +196,7 @@ runs:
         ls -l && \
         sudo cp u-boot-nodtb.bin /tmp/mnt/kernel8.img && \
         sudo umount /tmp/mnt && \
-        /usr/sbin/sgdisk --typecode="1:0700" $LOOP
+        sudo /usr/sbin/sgdisk --typecode="1:0700" $LOOP
 
     - name: Compress os image
       shell: bash
