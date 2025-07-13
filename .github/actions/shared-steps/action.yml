@@ -175,6 +175,7 @@ runs:
         sudo fatlabel ${LOOP}p1 "CIDATA" && \
         sudo mount ${LOOP}p1 /tmp/mnt && \
         sudo touch /tmp/mnt/meta-data && \
+        sudo cp config.txt /tmp/mnt && \
         sudo cp $(pwd)/${{ inputs.VERSION_MAJOR }}-rpi/bootstrap-image/user-data /tmp/mnt/ && \
         sudo cp $(pwd)/${{ inputs.VERSION_MAJOR }}-rpi/bootstrap-image/README.txt /tmp/mnt/ && \
         cd /tmp && \
@@ -193,9 +194,7 @@ runs:
         make rpi_arm64_defconfig && \
         make && \
         ls -l && \
-        sudo cp config.txt /tmp/mnt && \
         sudo cp u-boot-nodtb.bin /tmp/mnt/kernel8.img && \
-        echo 'kernel=u-boot.bin' | sudo dd of=/tmp/mnt/config.txt && \
         sudo umount /tmp/mnt && \
         /usr/sbin/sgdisk --typecode="1:0700" $LOOP
 
