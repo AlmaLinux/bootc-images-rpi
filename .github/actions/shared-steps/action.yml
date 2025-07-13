@@ -169,7 +169,8 @@ runs:
           --entrypoint /bin/bash \
           localhost/${{ env.IMAGE_NAME }}:${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }} \
           -c "cp /usr/share/raspberrypi2-kernel*/*/boot/bcm2712-rpi-5-b.dtb /tmp/bcm2712-rpi-5-b.dtb" && \
-        sudo umount /tmp/mnt
+        sudo umount /tmp/mnt && \
+        cd - && \
         LOOP=$(sudo losetup -f --show -P /tmp/image-${{ env.IMAGE_NAME }}4-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw) && \
         sudo fatlabel ${LOOP}p1 "CIDATA" && \
         sudo mount ${LOOP}p1 /tmp/mnt && \
