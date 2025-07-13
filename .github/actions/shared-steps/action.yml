@@ -193,8 +193,8 @@ runs:
         make rpi_arm64_defconfig && \
         make && \
         ls -l && \
-        ls -l output/ && \
-        exit -1 && \
+        sudo cp u-boot-nodtb.bin /tmp/mnt/u-boot.bin && \
+        echo 'kernel=u-boot.bin' | sudo dd of=/tmp/mnt/u-boot.bin && \
         sudo umount /tmp/mnt
 
     - name: Compress os image
@@ -265,12 +265,19 @@ runs:
         retention-days: 1
         if-no-files-found: error
 
-    - name: Upload Bootstrap Image Artifacts
+    - name: Upload Bootstrap Image Artifact 5
       uses: actions/upload-artifact@v4
       if: ${{ github.event_name == 'pull_request' }}
       with:
         name: image-${{ env.IMAGE_NAME }}5-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw
         path: /tmp/image-${{ env.IMAGE_NAME }}5-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw
+
+    - name: Upload Bootstrap Image Artifact 4
+      uses: actions/upload-artifact@v4
+      if: ${{ github.event_name == 'pull_request' }}
+      with:
+        name: image-${{ env.IMAGE_NAME }}4-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw
+        path: /tmp/image-${{ env.IMAGE_NAME }}4-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw
 
     - name: Upload Bootstrap Image Artifacts
       uses: actions/upload-artifact@v4
