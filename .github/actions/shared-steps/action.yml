@@ -193,9 +193,11 @@ runs:
         make rpi_arm64_defconfig && \
         make && \
         ls -l && \
-        sudo cp u-boot-nodtb.bin /tmp/mnt/u-boot.bin && \
+        sudo cp config.txt /tmp/mnt && \
+        sudo cp u-boot-nodtb.bin /tmp/mnt/kernel8.img && \
         echo 'kernel=u-boot.bin' | sudo dd of=/tmp/mnt/config.txt && \
-        sudo umount /tmp/mnt
+        sudo umount /tmp/mnt && \
+        /usr/sbin/sgdisk --typecode="1:0700" $LOOP
 
     - name: Compress os image
       shell: bash
