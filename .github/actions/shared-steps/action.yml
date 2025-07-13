@@ -188,6 +188,8 @@ runs:
         curl -o uboot.tar.bz2 https://ftp.denx.de/pub/u-boot/u-boot-2025.07.tar.bz2 && \
         tar -jxf uboot.tar.bz2 && \
         cd u-boot-2025.07/ && \
+        sudo apt update && \
+        sudo apt install -y libgnutls28-dev && \
         make rpi_arm64_defconfig && \
         make && \
         ls -l && \
