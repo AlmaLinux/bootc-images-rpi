@@ -32,13 +32,17 @@ Issues:
 
 ## Install Instructions
 
+### Common Steps (RPI4 and RPI5)
+
 Download and extract an image from Releases.
 
-Flash it to an m.2 drive, sd card, or usb device.
+Flash it to an m.2 drive (RPI5 only), SD card, or USB device.
 
 You can then look at the README.txt on the storage device along with customizing user-data as needed.
 
 Move the storage device to the Pi.
+
+### RPI5 specific steps
 
 Boot it for the first time with a monitor and keyboard attached, as you will need to do a bit of initial setup.
 
