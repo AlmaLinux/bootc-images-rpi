@@ -189,7 +189,9 @@ runs:
         tar -jxvf uboot.tar.bz2 && \
         cd u-boot-u-boot-2025.07/ && \
         make rpi_arm64_defconfig && \
+        make && \
         ls -l && \
+        ls -l output/ && \
         exit -1 && \
         sudo umount /tmp/mnt
 
