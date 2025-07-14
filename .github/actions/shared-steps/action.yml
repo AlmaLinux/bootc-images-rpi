@@ -200,10 +200,10 @@ runs:
         sudo umount /tmp/mnt && \
         sudo /usr/sbin/sgdisk --typecode="1:0700" $LOOP && \
         sudo cp /tmp/image-${{ env.IMAGE_NAME }}4-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw /tmp/image-${{ env.IMAGE_NAME }}3-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw && \
-        sfdisk -l /tmp/image-${{ env.IMAGE_NAME }}3-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw && \
-        sgdisk -m 1:2:3 /tmp/image-${{ env.IMAGE_NAME }}3-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw && \
-        sfdisk --part-type /tmp/image-${{ env.IMAGE_NAME }}3-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw 1 e && \
-        sfdisk -l /tmp/image-${{ env.IMAGE_NAME }}3-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw
+        sudo sfdisk -l /tmp/image-${{ env.IMAGE_NAME }}3-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw && \
+        sudo sgdisk -m 1:2:3 /tmp/image-${{ env.IMAGE_NAME }}3-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw && \
+        sudo sfdisk --part-type /tmp/image-${{ env.IMAGE_NAME }}3-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw 1 e && \
+        sudo sfdisk -l /tmp/image-${{ env.IMAGE_NAME }}3-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw
 
     - name: Compress os image
       shell: bash
