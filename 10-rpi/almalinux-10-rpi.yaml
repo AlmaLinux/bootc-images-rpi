@@ -29,18 +29,6 @@ postprocess:
     dnf clean all
     rm /var/{log,cache,lib}/* -rf
     systemctl preset-all
-  - |
-    #!/usr/bin/env bash
-    set -euo pipefail
-    cd /tmp
-    echo nameserver 1.1.1.1 > /etc/resolv.conf
-    curl -o firmware.tar.gz https://github.com/RPi-Distro/firmware-nonfree/archive/223ccf3a3ddb11b3ea829749fbbba4d65b380897/firmware-nonfree-223ccf3a3ddb11b3ea829749fbbba4d65b380897.tar.gz
-    tar -tvf firmware.tar.gz 
-    cat firmware-nonfree-223ccf3a3ddb11b3ea829749fbbba4d65b380897/debian/config/brcm80211/brcm/brcmfmac43430-sdio.raspberrypi,3-model-b.bin > /usr/lib/firmware/brcm/brcmfmac43430-sdio.raspberrypi,3-model-b.bin
-    cat firmware-nonfree-223ccf3a3ddb11b3ea829749fbbba4d65b380897/debian/config/brcm80211/brcm/brcmfmac43430-sdio.raspberrypi,3-model-b.clm_blob > /usr/lib/firmware/brcm/brcmfmac43430-sdio.raspberrypi,3-model-b.clm_blob
-    cat firmware-nonfree-223ccf3a3ddb11b3ea829749fbbba4d65b380897/debian/config/brcm80211/brcm/brcmfmac43430-sdio.raspberrypi,3-model-b.txt > /usr/lib/firmware/brcm/brcmfmac43430-sdio.raspberrypi,3-model-b.txt
-    rm -rf firmware*
-    rm /etc/resolv.conf
 
 include:
   - standard/manifest.yaml
