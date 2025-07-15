@@ -32,7 +32,7 @@ Issues:
 
 ## Install Instructions
 
-### Common Steps (RPI4 and RPI5)
+### Common Steps (RPI3, RPI4 and RPI5)
 
 Download and extract an image from Releases.
 
