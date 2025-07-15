@@ -60,6 +60,27 @@ Back out, save the config and reset the pi.
 
 You should now have a bootable system.
 
+## Switching images
+
+The install image comes with a special image containing cloud-init to grow the filesystem and setup the system.
+
+Once installed, switch to the upstream image by running:
+
+### AlmaLinux 10
+```
+bootc switch quay.io/almalinuxorg/almalinux-bootc-rpi:10
+```
+
+### AlmaLinux 9
+```
+bootc switch quay.io/almalinuxorg/almalinux-bootc-rpi:9
+```
+
+### AlmaLinux 10-kitten
+```
+bootc switch quay.io/almalinuxorg/almalinux-bootc-rpi:10-kitten
+```
+
 ## Project Status & News
 
 * **[2025-06-10]** Forked repo for RPI specific images
