@@ -198,14 +198,20 @@ runs:
         ls -l && \
         sudo cp u-boot-nodtb.bin /tmp/mnt/kernel8.img && \
         sudo umount /tmp/mnt && \
-        sudo /usr/sbin/sgdisk --typecode="1:0700" $LOOP
+        sudo /usr/sbin/sgdisk --typecode="1:0700" $LOOP && \
+        sudo cp /tmp/image-${{ env.IMAGE_NAME }}4-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw /tmp/image-${{ env.IMAGE_NAME }}3-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw && \
+        sudo sfdisk -l /tmp/image-${{ env.IMAGE_NAME }}3-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw && \
+        sudo sgdisk -m 1:2:3 /tmp/image-${{ env.IMAGE_NAME }}3-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw && \
+        sudo sfdisk --part-type /tmp/image-${{ env.IMAGE_NAME }}3-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw 1 e && \
+        sudo sfdisk -l /tmp/image-${{ env.IMAGE_NAME }}3-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw
 
     - name: Compress os image
       shell: bash
       if: github.event_name == 'release'
       run: |
         sudo xz /tmp/image-${{ env.IMAGE_NAME }}5-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw && \
-        sudo xz /tmp/image-${{ env.IMAGE_NAME }}4-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw
+        sudo xz /tmp/image-${{ env.IMAGE_NAME }}4-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw && \
+        sudo xz /tmp/image-${{ env.IMAGE_NAME }}3-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw
 
     - name: Run Image
       id: run
@@ -283,6 +289,13 @@ runs:
         name: image-${{ env.IMAGE_NAME }}4-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw
         path: /tmp/image-${{ env.IMAGE_NAME }}4-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw
 
+    - name: Upload Bootstrap Image Artifact 3
+      uses: actions/upload-artifact@v4
+      if: ${{ github.event_name == 'pull_request' }}
+      with:
+        name: image-${{ env.IMAGE_NAME }}3-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw
+        path: /tmp/image-${{ env.IMAGE_NAME }}3-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw
+
     - name: Upload Bootstrap Image Artifact 5
       uses: actions/upload-artifact@v4
       if: ${{ github.event_name == 'release' }}
@@ -296,6 +309,13 @@ runs:
       with:
         name: image-${{ env.IMAGE_NAME }}4-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw.xz
         path: /tmp/image-${{ env.IMAGE_NAME }}4-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw.xz
+
+    - name: Upload Bootstrap Image Artifact 3
+      uses: actions/upload-artifact@v4
+      if: ${{ github.event_name == 'release' }}
+      with:
+        name: image-${{ env.IMAGE_NAME }}3-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw.xz
+        path: /tmp/image-${{ env.IMAGE_NAME }}3-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw.xz
 
     - name: Upload Output Artifacts
       if: ${{ env.res != 0 || github.event_name == 'workflow_dispatch' }}

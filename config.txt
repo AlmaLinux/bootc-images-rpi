@@ -1,6 +1,9 @@
 # This file is provided as a placeholder for user options
 # AlmaLinux - few default config options
 
+[pi3]
+arm_64bit=1
+
 [pi4]
 arm_boost=1
 
