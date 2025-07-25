@@ -161,6 +161,7 @@ runs:
         sudo cp $(pwd)/${{ inputs.VERSION_MAJOR }}-rpi/bootstrap-image/README.txt /tmp/mnt/ && \
         cd /tmp && \
         curl -L -O https://github.com/worproject/rpi5-uefi/releases/download/v0.3/RPi5_UEFI_Release_v0.3.zip && \
+        sudo mkdir /tmp/mnt/overlays && \
         sudo /bin/bash -c "cd mnt && unzip ../RPi5_UEFI_Release_v0.3.zip" && \
         sudo podman run \
           --rm \
@@ -168,7 +169,7 @@ runs:
           -v /tmp/mnt:/tmp \
           --entrypoint /bin/bash \
           localhost/${{ env.IMAGE_NAME }}:${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }} \
-          -c "cp /usr/share/raspberrypi2-kernel*/*/boot/bcm2712-rpi-5-b.dtb /tmp/bcm2712-rpi-5-b.dtb" && \
+          -c "cp /usr/share/raspberrypi2-kernel*/*/boot/bcm2712-rpi-5-b.dtb /tmp/bcm2712-rpi-5-b.dtb && cp /usr/share/raspberrypi2-kernel*/*/boot/overlays/overlay_map.dtb /tmp/overlays/overlay_map.dtb && cp /usr/share/raspberrypi2-kernel*/*/boot/overlays/bcm2712d0.dtbo /tmp/overlays/bcm2712d0.dtbo" && \
         sudo umount /tmp/mnt && \
         cd - && \
         LOOP=$(sudo losetup -f --show -P /tmp/image-${{ env.IMAGE_NAME }}4-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw) && \

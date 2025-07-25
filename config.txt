@@ -1,6 +1,9 @@
 # This file is provided as a placeholder for user options
 # AlmaLinux - few default config options
 
+[pi5]
+framebuffer_depth=24
+
 [pi3]
 arm_64bit=1
 
