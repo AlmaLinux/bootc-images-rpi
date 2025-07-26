@@ -195,6 +195,7 @@ runs:
         cd u-boot-*/ && \
         cp arch/arm/dts/bcm2711-rpi-4-b.dts arch/arm/dts/bcm2712-rpi-5-b.dtb && \
         sudo apt install -y libgnutls28-dev && \
+        echo CONFIG_USB_XHCI_DWC3=y >> configs/rpi_5_defconfig && \
         echo CONFIG_USB_DWC3=y >> configs/rpi_5_defconfig && \
         echo CONFIG_USB_DWC3_GENERIC=y >> configs/rpi_5_defconfig && \
         echo CONFIG_BOOTDELAY=3 >> configs/rpi_5_defconfig && \
@@ -287,7 +288,7 @@ runs:
 
     - name: Upload U-Boot.bin
       uses: actions/upload-artifact@v4
-      if: ${{ github.event_name == 'pull_request' }}
+      if: ${{ github.event_name == 'pull_request' && inputs.VERSION_MAJOR == '10' }}
       with:
         name: u-boot.bin
         path: /tmp/u-boot.bin
