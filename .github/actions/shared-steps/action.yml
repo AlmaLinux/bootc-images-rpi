@@ -190,7 +190,7 @@ runs:
           --entrypoint /bin/bash \
           localhost/${{ env.IMAGE_NAME }}:${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }} \
           -c "cp -a --no-preserve=links /usr/share/raspberrypi2-kernel*/*/boot/*.dtb /tmp/ && cp -a --no-preserve=links /usr/lib/ostree-boot/* /tmp/ && cp /usr/share/raspberrypi2-kernel*/*/boot/overlays/overlay_map.dtb /tmp/overlays/overlay_map.dtb && cp /usr/share/raspberrypi2-kernel*/*/boot/overlays/bcm2712d0.dtbo /tmp/overlays/bcm2712d0.dtbo" && \
-        curl -o uboot.tar.gz https://github.com/talos-rpi5/u-boot/archive/refs/tags/v2025.04-rpi5-3.tar.gz && \
+        curl -L -o uboot.tar.gz https://github.com/talos-rpi5/u-boot/archive/refs/tags/v2025.04-rpi5-3.tar.gz && \
         tar -zxf uboot.tar.gz && \
         cd u-boot-*/ && \
         sudo apt install -y libgnutls28-dev && \
@@ -206,8 +206,6 @@ runs:
         sudo sfdisk --part-type /tmp/image-${{ env.IMAGE_NAME }}3-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw 1 e && \
         sudo sfdisk -l /tmp/image-${{ env.IMAGE_NAME }}3-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw
 
-        #patch -p1 < <(sed '/CONFIG_VIDEO_BCM2835=y/d;/CONFIG_PHYS_TO_BUS=y/a\ # CONFIG_HEXDUMP is not set' /tmp/sbc-raspberrypi/artifacts/u-boot/patches/0008-enable-nvme-and-fixup-efi-boot.patch) && \
- 
     - name: Compress os image
       shell: bash
       if: github.event_name == 'release'
