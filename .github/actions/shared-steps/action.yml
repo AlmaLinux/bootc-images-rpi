@@ -193,6 +193,7 @@ runs:
         curl -L -o uboot.tar.gz https://github.com/talos-rpi5/u-boot/archive/refs/tags/v2025.04-rpi5-3.tar.gz && \
         tar -zxf uboot.tar.gz && \
         cd u-boot-*/ && \
+        cp arch/arm/dts/bcm2711-rpi-4-b.dts arch/arm/dts/bcm2712-rpi-5-b.dtb && \
         sudo apt install -y libgnutls28-dev && \
         make rpi_5_defconfig && \
         make && \
