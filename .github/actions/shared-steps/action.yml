@@ -197,10 +197,16 @@ runs:
         sudo apt install -y libgnutls28-dev && \
         echo CONFIG_USB_DWC3=y >> configs/rpi_5_defconfig && \
         echo CONFIG_USB_DWC3_GENERIC=y >> configs/rpi_5_defconfig && \
+        echo CONFIG_BOOTDELAY=3 >> configs/rpi_5_defconfig && \
+        echo CONFIG_AUTOBOOT_KEYED=y >> configs/rpi_5_defconfig && \
+        echo 'CONFIG_AUTOBOOT_PROMPT="Press SPACE to abort autoboot in %d seconds\n"' >> configs/rpi_5_defconfig && \
+        echo 'CONFIG_AUTOBOOT_DELAY_STR="d"' >> configs/rpi_5_defconfig && \
+        echo 'CONFIG_AUTOBOOT_STOP_STR=" "' >> configs/rpi_5_defconfig && \
         make rpi_5_defconfig && \
         make && \
         ls -l && \
         sudo cp u-boot-nodtb.bin /tmp/mnt/kernel8.img && \
+        sudo cp u-boot-nodtb.bin /tmp/u-boot.bin && \
         sudo umount /tmp/mnt && \
         sudo /usr/sbin/sgdisk --typecode="1:0700" $LOOP && \
         sudo cp /tmp/image-${{ env.IMAGE_NAME }}4-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw /tmp/image-${{ env.IMAGE_NAME }}3-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw && \
@@ -278,6 +284,13 @@ runs:
         path: /tmp/image-${{ env.IMAGE_NAME }}-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.tar
         retention-days: 1
         if-no-files-found: error
+
+    - name: Upload U-Boot.bin
+      uses: actions/upload-artifact@v4
+      if: ${{ github.event_name == 'pull_request' }}
+      with:
+        name: u-boot.bin
+        path: /tmp/u-boot.bin
 
     - name: Upload Bootstrap Image Artifact 5
       uses: actions/upload-artifact@v4
