@@ -195,6 +195,8 @@ runs:
         cd u-boot-*/ && \
         cp arch/arm/dts/bcm2711-rpi-4-b.dts arch/arm/dts/bcm2712-rpi-5-b.dtb && \
         sudo apt install -y libgnutls28-dev && \
+        echo CONFIG_USB_DWC3=y >> configs/rpi_5_defconfig && \
+        echo CONFIG_USB_DWC3_GENERIC=y >> configs/rpi_5_defconfig && \
         make rpi_5_defconfig && \
         make && \
         ls -l && \
