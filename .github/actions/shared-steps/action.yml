@@ -194,7 +194,7 @@ runs:
         tar -zxf uboot.tar.gz && \
         cd u-boot-*/ && \
         sudo apt install -y libgnutls28-dev && \
-        make rpi_arm64_defconfig && \
+        make rpi_5_defconfig && \
         make && \
         ls -l && \
         sudo cp u-boot-nodtb.bin /tmp/mnt/kernel8.img && \
