@@ -161,6 +161,7 @@ runs:
         sudo cp $(pwd)/${{ inputs.VERSION_MAJOR }}-rpi/bootstrap-image/README.txt /tmp/mnt/ && \
         cd /tmp && \
         curl -L -O https://github.com/worproject/rpi5-uefi/releases/download/v0.3/RPi5_UEFI_Release_v0.3.zip && \
+        sudo mkdir /tmp/mnt/overlays && \
         sudo /bin/bash -c "cd mnt && unzip ../RPi5_UEFI_Release_v0.3.zip" && \
         sudo podman run \
           --rm \
@@ -188,15 +189,25 @@ runs:
           -v /tmp/mnt:/tmp \
           --entrypoint /bin/bash \
           localhost/${{ env.IMAGE_NAME }}:${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }} \
-          -c "cp -a --no-preserve=links /usr/share/raspberrypi2-kernel*/*/boot/*.dtb /tmp/ && cp -a --no-preserve=links /usr/lib/ostree-boot/* /tmp/" && \
-        curl -o uboot.tar.bz2 https://ftp.denx.de/pub/u-boot/u-boot-2025.07.tar.bz2 && \
-        tar -jxf uboot.tar.bz2 && \
-        cd u-boot-2025.07/ && \
+          -c "cp -a --no-preserve=links /usr/share/raspberrypi2-kernel*/*/boot/*.dtb /tmp/ && cp -a --no-preserve=links /usr/lib/ostree-boot/* /tmp/ && cp /usr/share/raspberrypi2-kernel*/*/boot/overlays/overlay_map.dtb /tmp/overlays/overlay_map.dtb && cp /usr/share/raspberrypi2-kernel*/*/boot/overlays/bcm2712d0.dtbo /tmp/overlays/bcm2712d0.dtbo" && \
+        curl -L -o uboot.tar.gz https://github.com/talos-rpi5/u-boot/archive/refs/tags/v2025.04-rpi5-3.tar.gz && \
+        tar -zxf uboot.tar.gz && \
+        cd u-boot-*/ && \
+        cp arch/arm/dts/bcm2711-rpi-4-b.dts arch/arm/dts/bcm2712-rpi-5-b.dtb && \
         sudo apt install -y libgnutls28-dev && \
-        make rpi_arm64_defconfig && \
+        echo CONFIG_USB_XHCI_DWC3=y >> configs/rpi_5_defconfig && \
+        echo CONFIG_USB_DWC3=y >> configs/rpi_5_defconfig && \
+        echo CONFIG_USB_DWC3_GENERIC=y >> configs/rpi_5_defconfig && \
+        echo CONFIG_BOOTDELAY=3 >> configs/rpi_5_defconfig && \
+        echo CONFIG_AUTOBOOT_KEYED=y >> configs/rpi_5_defconfig && \
+        echo 'CONFIG_AUTOBOOT_PROMPT="Press SPACE to abort autoboot in %d seconds\n"' >> configs/rpi_5_defconfig && \
+        echo 'CONFIG_AUTOBOOT_DELAY_STR="d"' >> configs/rpi_5_defconfig && \
+        echo 'CONFIG_AUTOBOOT_STOP_STR=" "' >> configs/rpi_5_defconfig && \
+        make rpi_5_defconfig && \
         make && \
         ls -l && \
         sudo cp u-boot-nodtb.bin /tmp/mnt/kernel8.img && \
+        sudo cp u-boot-nodtb.bin /tmp/u-boot.bin && \
         sudo umount /tmp/mnt && \
         sudo /usr/sbin/sgdisk --typecode="1:0700" $LOOP && \
         sudo cp /tmp/image-${{ env.IMAGE_NAME }}4-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw /tmp/image-${{ env.IMAGE_NAME }}3-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw && \
@@ -274,6 +285,13 @@ runs:
         path: /tmp/image-${{ env.IMAGE_NAME }}-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.tar
         retention-days: 1
         if-no-files-found: error
+
+    - name: Upload U-Boot.bin
+      uses: actions/upload-artifact@v4
+      if: ${{ github.event_name == 'pull_request' && inputs.VERSION_MAJOR == '10' }}
+      with:
+        name: u-boot.bin
+        path: /tmp/u-boot.bin
 
     - name: Upload Bootstrap Image Artifact 5
       uses: actions/upload-artifact@v4
