@@ -189,7 +189,7 @@ runs:
           -v /tmp/mnt:/tmp \
           --entrypoint /bin/bash \
           localhost/${{ env.IMAGE_NAME }}:${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }} \
-          -c "cp -a --no-preserve=links /usr/share/raspberrypi2-kernel*/*/boot/*.dtb /tmp/ && cp -a --no-preserve=links /usr/lib/ostree-boot/* /tmp/" && cp -a /usr/share/raspberrypi2-kernel*/*/boot/overlays/* "/tmp/overlays/" && \
+          -c "cp -a --no-preserve=links /usr/share/raspberrypi2-kernel*/*/boot/*.dtb /tmp/ && cp -a --no-preserve=links /usr/lib/ostree-boot/* /tmp/ && cp -a /usr/share/raspberrypi2-kernel*/*/boot/overlays/* /tmp/overlays/" && \
         curl -o uboot.tar.bz2 https://ftp.denx.de/pub/u-boot/u-boot-2025.07.tar.bz2 && \
         tar -jxf uboot.tar.bz2 && \
         cd u-boot-2025.07/ && \
