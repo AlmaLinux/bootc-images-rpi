@@ -162,6 +162,7 @@ runs:
         cd /tmp && \
         curl -L -O https://github.com/worproject/rpi5-uefi/releases/download/v0.3/RPi5_UEFI_Release_v0.3.zip && \
         sudo /bin/bash -c "cd mnt && unzip ../RPi5_UEFI_Release_v0.3.zip" && \
+        sudo mkdir /tmp/mnt/overlays && \
         sudo podman run \
           --rm \
           -i \
@@ -188,7 +189,7 @@ runs:
           -v /tmp/mnt:/tmp \
           --entrypoint /bin/bash \
           localhost/${{ env.IMAGE_NAME }}:${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }} \
-          -c "cp -a --no-preserve=links /usr/share/raspberrypi2-kernel*/*/boot/*.dtb /tmp/ && cp -a --no-preserve=links /usr/lib/ostree-boot/* /tmp/" && \
+          -c "cp -a --no-preserve=links /usr/share/raspberrypi2-kernel*/*/boot/*.dtb /tmp/ && cp -a --no-preserve=links /usr/lib/ostree-boot/* /tmp/" && cp -a /usr/share/raspberrypi2-kernel*/*/boot/overlays/* /tmp/overlays/" && \
         curl -o uboot.tar.bz2 https://ftp.denx.de/pub/u-boot/u-boot-2025.07.tar.bz2 && \
         tar -jxf uboot.tar.bz2 && \
         cd u-boot-2025.07/ && \
@@ -197,6 +198,24 @@ runs:
         make && \
         ls -l && \
         sudo cp u-boot-nodtb.bin /tmp/mnt/kernel8.img && \
+        curl -L -o uboot.tar.gz https://github.com/talos-rpi5/u-boot/archive/refs/tags/v2025.04-rpi5-3.tar.gz && \
+        tar -zxf uboot.tar.gz && \
+        cd u-boot-*/ && \
+        cp arch/arm/dts/bcm2711-rpi-4-b.dts arch/arm/dts/bcm2712-rpi-5-b.dtb && \
+        echo CONFIG_USB_XHCI_DWC3=y >> configs/rpi_5_defconfig && \
+        echo CONFIG_USB_DWC3=y >> configs/rpi_5_defconfig && \
+        echo CONFIG_USB_DWC3_GENERIC=y >> configs/rpi_5_defconfig && \
+        echo CONFIG_BOOTDELAY=1 >> configs/rpi_5_defconfig && \
+        echo CONFIG_AUTOBOOT_KEYED=y >> configs/rpi_5_defconfig && \
+        echo 'CONFIG_AUTOBOOT_PROMPT="Press SPACE to abort autoboot in %d seconds\n"' >> configs/rpi_5_defconfig && \
+        echo 'CONFIG_AUTOBOOT_DELAY_STR="d"' >> configs/rpi_5_defconfig && \
+        echo 'CONFIG_AUTOBOOT_STOP_STR=" "' >> configs/rpi_5_defconfig && \
+        echo 'CONFIG_BOOTCOMMAND="bootflow scan;"' >> configs/rpi_5_defconfig && \
+        sed -i 's/CONFIG_PREBOOT=.*/CONFIG_PREBOOT="pci enum; nvme scan; usb start;"/' configs/rpi_5_defconfig && \
+        make rpi_5_defconfig && \
+        make && \
+        ls -l && \
+        sudo cp u-boot-nodtb.bin /tmp/mnt/kernel8-rpi5.img && \
         sudo umount /tmp/mnt && \
         sudo /usr/sbin/sgdisk --typecode="1:0700" $LOOP && \
         sudo cp /tmp/image-${{ env.IMAGE_NAME }}4-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw /tmp/image-${{ env.IMAGE_NAME }}3-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw && \
