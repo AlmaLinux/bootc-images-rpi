@@ -23,8 +23,6 @@ postprocess:
     [install]
     root-fs-type = "xfs"
     EOF
-    curl -o /usr/bin/rpi-bootc-bootloader https://raw.githubusercontent.com/kfox1111/rpi-bootc-bootloader/refs/tags/v0.0.1/rpi-bootc-bootloader
-    chmod +x /usr/bin/rpi-bootc-bootloader
   - |
     #!/usr/bin/env bash
     set -euo pipefail
