@@ -172,7 +172,7 @@ runs:
           --privileged \
           --entrypoint /bin/bash \
           localhost/${{ env.IMAGE_NAME }}:${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }} \
-          -c "mount ${LOOP}p3 /sysroot && mount ${LOOP}p2 /boot && (bootc status --format json | jq .) && rpi-bootc-bootloader version && rpi-bootc-bootloader sync" && \
+          -c "mount ${LOOP}p3 /sysroot && mount ${LOOP}p2 /boot && (bootc status --format json | jq .) && rpi-bootc-bootloader version && ls -d /sysroot/ostree/deploy/default/deploy/*/ 2>/dev/null && rpi-bootc-bootloader sync" && \
         cd - # && \
 #       LOOP=$(sudo losetup -f --show -P /tmp/image-${{ env.IMAGE_NAME }}4-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw) && \
 #       sudo fatlabel ${LOOP}p1 "CIDATA" && \
