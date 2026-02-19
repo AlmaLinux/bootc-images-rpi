@@ -17,7 +17,7 @@ RUN /usr/libexec/bootc-base-imagectl build-rootfs --manifest=almalinux-9-rpi /ta
 RUN \
   cd /tmp && \
   mkdir -p /target-rootfs/usr/bin && \
-  curl -o /target-rootfs/usr/bin/rpi-bootc-bootloader https://raw.githubusercontent.com/kfox1111/rpi-bootc-bootloader/refs/tags/v0.0.2/rpi-bootc-bootloader && \
+  curl -o /target-rootfs/usr/bin/rpi-bootc-bootloader https://raw.githubusercontent.com/kfox1111/rpi-bootc-bootloader/refs/tags/v0.0.3/rpi-bootc-bootloader && \
   chmod +x /target-rootfs/usr/bin/rpi-bootc-bootloader && \
   curl -L -o firmware.tar.gz https://github.com/RPi-Distro/firmware-nonfree/archive/223ccf3a3ddb11b3ea829749fbbba4d65b380897/firmware-nonfree-223ccf3a3ddb11b3ea829749fbbba4d65b380897.tar.gz && \
   curl -L -o firmware.tar.gz https://github.com/RPi-Distro/firmware-nonfree/archive/223ccf3a3ddb11b3ea829749fbbba4d65b380897/firmware-nonfree-223ccf3a3ddb11b3ea829749fbbba4d65b380897.tar.gz && \
