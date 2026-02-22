@@ -10,4 +10,5 @@ RUN \
   rm -f /usr/lib/python*/site-packages/cloudinit/config/cc_resizefs.pyc && \
   mkdir -p /usr/lib/systemd/system/ostree-finalize-staged.service.d && \
   echo '[Service]' > /usr/lib/systemd/system/ostree-finalize-staged.service.d/rpi-bootc-bootloader.conf && \
-  echo 'ExecStopPost=/usr/bin/rpi-bootc-bootloader sync' >> /usr/lib/systemd/system/ostree-finalize-staged.service.d/rpi-bootc-bootloader.conf
+  echo 'ExecStop=' >> /usr/lib/systemd/system/ostree-finalize-staged.service.d/rpi-bootc-bootloader.conf && \
+  echo 'ExecStop=/usr/bin/rpi-bootc-bootloader finalize-staged' >> /usr/lib/systemd/system/ostree-finalize-staged.service.d/rpi-bootc-bootloader.conf
