@@ -22,6 +22,7 @@ postprocess:
     cat > /usr/lib/bootc/install/20-rhel.toml << EOF
     [install]
     root-fs-type = "xfs"
+    kargs = ["console=tty0", "console=ttyAMA10"]
     EOF
   - |
     #!/usr/bin/env bash

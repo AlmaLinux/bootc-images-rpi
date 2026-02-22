@@ -1,6 +1,10 @@
 # This file is provided as a placeholder for user options
 # AlmaLinux - few default config options
 
+[pi5]
+kernel=kernel8-rpi5.img
+framebuffer_depth=16
+
 [pi3]
 arm_64bit=1
 
