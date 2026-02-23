@@ -1,3 +1,6 @@
-[[customizations.filesystem]]
+[[blueprint.customizations.filesystem]]
 mountpoint = "/"
 size = "4GiB"
+
+[[blueprint.customizations.kernel]]
+append = "console=tty0 console=ttyAMA10"
