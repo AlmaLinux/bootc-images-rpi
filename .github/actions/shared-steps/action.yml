@@ -145,6 +145,7 @@ runs:
            -v /var/lib/containers/storage:/var/lib/containers/storage \
            quay.io/centos-bootc/bootc-image-builder:latest \
            --config /output/bib-config.toml \
+           --karg="console=tty0" --karg="console=ttyAMA10" \
            --type raw \
            --rootfs xfs \
            --local \
