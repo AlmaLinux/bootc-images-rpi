@@ -17,7 +17,7 @@ RUN /usr/libexec/bootc-base-imagectl build-rootfs --manifest=almalinux-10-rpi /t
 RUN \
   cd /tmp && \
   mkdir -p /target-rootfs/usr/bin && \
-  mkdir -p /usr/lib/systemd/system/ostree-finalize-staged.service.d && \
+  mkdir -p /target-rootfs/usr/lib/systemd/system/ostree-finalize-staged.service.d && \
   curl -o /target-rootfs/usr/lib/systemd/system/ostree-finalize-staged.service.d/rpi-bootc-bootloader.conf https://raw.githubusercontent.com/kfox1111/rpi-bootc-bootloader/refs/tags/v0.0.5/system/ostree-finalize-staged.service.d/rpi-bootc-bootloader.conf && \
   curl -o /target-rootfs/usr/bin/rpi-bootc-bootloader https://raw.githubusercontent.com/kfox1111/rpi-bootc-bootloader/refs/tags/v0.0.5/rpi-bootc-bootloader && \
   chmod +x /target-rootfs/usr/bin/rpi-bootc-bootloader && \
