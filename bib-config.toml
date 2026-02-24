@@ -4,3 +4,4 @@ size = "4GiB"
 
 [customizations.kernel]
 append = "console=tty0 console=ttyAMA10"
+remove = ["console=ttyS0"]
