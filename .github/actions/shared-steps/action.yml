@@ -142,7 +142,7 @@ runs:
         go mod edit --replace github.com/osbuild/images=github.com/supakeen/images@drop-default-kernel-args-for-bootc-raw && \
         go mod tidy && \
         cd ../ && \
-        make container && \
+        make build-container && \
         cd ../ && \
         sudo podman run \
            --rm \
