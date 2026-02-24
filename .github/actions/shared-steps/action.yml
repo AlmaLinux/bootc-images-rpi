@@ -128,6 +128,8 @@ runs:
       if: github.event_name == 'pull_request' || github.event_name == 'release'
       env:
         IMAGE_ID: ${{ steps.rechunk.outputs.image-id }}
+      #  go mod edit --replace github.com/osbuild/images=github.com/supakeen/images@drop-default-kernel-args-for-bootc-raw && \
+      #  go mod tidy && \
       run: |
         mkdir -p output && \
         cp bib-config.toml output/ && \
@@ -139,10 +141,6 @@ runs:
         touch /tmp/cmdline
         git clone https://github.com/osbuild/bootc-image-builder && \
         cd bootc-image-builder/bib && \
-        go mod edit --replace github.com/osbuild/images=github.com/supakeen/images@drop-default-kernel-args-for-bootc-raw && \
-        go clean -modcache && \
-        go mod tidy && \
-        go mod download && \
         cd ../ && \
         make build-container && \
         cd ../ && \
