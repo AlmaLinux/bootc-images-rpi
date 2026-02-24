@@ -1,6 +1,6 @@
 [[customizations.filesystem]]
 mountpoint = "/"
-min_size = "4GiB"
+size = "4GiB"
 
 [customizations.kernel]
 arguments = "console=tty0 console=ttyAMA10"
