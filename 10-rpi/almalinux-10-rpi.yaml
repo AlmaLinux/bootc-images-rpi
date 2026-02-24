@@ -20,7 +20,9 @@ postprocess:
 
     mkdir -p /usr/lib/bootc/install/
     mkdir -p /usr/lib/bootc/kargs.d/
-    echo 'kargs = ["--delete=ttyS0", "console=tty0", "console=ttyAMA10"]' > /usr/lib/bootc/kargs.d/10-consoles.toml
+    echo 'kargs = ["console=tty0", "console=ttyAMA10"]' > /usr/lib/bootc/kargs.d/10-consoles.toml
+    sed -i 's/console=ttyS0//g' /etc/default/grub || true 
+    if [ -d /etc/kernel/cmdline ]; then sed -i 's/console=ttyS0//g' /etc/kernel/cmdline; fi
     cat > /usr/lib/bootc/install/20-rhel.toml << EOF
     [install]
     root-fs-type = "xfs"
