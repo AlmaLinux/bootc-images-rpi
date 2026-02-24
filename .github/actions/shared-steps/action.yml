@@ -145,7 +145,6 @@ runs:
            -v /var/lib/containers/storage:/var/lib/containers/storage \
            quay.io/centos-bootc/bootc-image-builder:latest \
            --config /output/bib-config.toml \
-           --karg="console=tty0" --karg="console=ttyAMA10" \
            --type raw \
            --rootfs xfs \
            --local \
@@ -173,7 +172,7 @@ runs:
           --privileged \
           --entrypoint /bin/bash \
           localhost/${{ env.IMAGE_NAME }}:${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }} \
-          -c "mount ${LOOP}p3 /sysroot && mount ${LOOP}p2 /boot && (bootc status --format json | jq .) && rpi-bootc-bootloader version && bash -x rpi-bootc-bootloader sync" && \
+          -c "mount ${LOOP}p3 /sysroot && mount ${LOOP}p2 /boot && (bootc status --format json | jq .) && grep options /boot/loader/entries/ostree-1.conf && rpi-bootc-bootloader version && bash -x rpi-bootc-bootloader sync" && \
         echo done
 #        cd - # && \
 #       LOOP=$(sudo losetup -f --show -P /tmp/image-${{ env.IMAGE_NAME }}4-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw) && \
