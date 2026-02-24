@@ -152,7 +152,6 @@ runs:
            -v /tmp/cmdline:/proc/cmdline \
            -v $(pwd)/output:/output \
            -v /var/lib/containers/storage:/var/lib/containers/storage \
-           #quay.io/centos-bootc/bootc-image-builder:latest \
            bootc-image-builder:latest \
            --config /output/bib-config.toml \
            --type raw \
