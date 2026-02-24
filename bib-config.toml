@@ -3,4 +3,4 @@ mountpoint = "/"
 size = "4GiB"
 
 [customizations.kernel]
-arguments = "console=tty0 console=ttyAMA10"
+args = "console=tty0 console=ttyAMA10"
