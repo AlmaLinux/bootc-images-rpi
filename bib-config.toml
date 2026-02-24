@@ -1,6 +1,6 @@
-[[customizations.filesystem]]
-mountpoint = "/"
-size = "4GiB"
+#[[customizations.filesystem]]
+#mountpoint = "/"
+#size = "4GiB"
 
 [customizations.kernel]
 append = "console=tty0 console=ttyAMA10"
