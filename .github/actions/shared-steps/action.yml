@@ -137,6 +137,11 @@ runs:
            --build-arg=BASE=localhost/${{ env.IMAGE_NAME }}:${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }} \
            ${{ inputs.VERSION_MAJOR }}-rpi/bootstrap-image && \
         touch /tmp/cmdline
+        git clone https://github.com/osbuild/bootc-image-builder && \
+        cd bootc-image-builder && \
+        go mod edit --replace github.com/osbuild/images=github.com/supakeen/images@drop-default-kernel-args-for-bootc-raw && \
+        go mod tidy && \
+        make container && \
         sudo podman run \
            --rm \
            -i \
@@ -145,7 +150,8 @@ runs:
            -v /tmp/cmdline:/proc/cmdline \
            -v $(pwd)/output:/output \
            -v /var/lib/containers/storage:/var/lib/containers/storage \
-           quay.io/centos-bootc/bootc-image-builder:latest \
+           #quay.io/centos-bootc/bootc-image-builder:latest \
+           bootc-image-builder:latest \
            --config /output/bib-config.toml \
            --type raw \
            --rootfs xfs \
