@@ -141,8 +141,9 @@ runs:
         cd bootc-image-builder/bib && \
         go mod edit --replace github.com/osbuild/images=github.com/supakeen/images@drop-default-kernel-args-for-bootc-raw && \
         go mod tidy && \
+        cd ../ && \
         make container && \
-        cd ../../ && \
+        cd ../ && \
         sudo podman run \
            --rm \
            -i \
