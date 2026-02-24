@@ -138,10 +138,11 @@ runs:
            ${{ inputs.VERSION_MAJOR }}-rpi/bootstrap-image && \
         touch /tmp/cmdline
         git clone https://github.com/osbuild/bootc-image-builder && \
-        cd bootc-image-builder && \
+        cd bootc-image-builder/bib && \
         go mod edit --replace github.com/osbuild/images=github.com/supakeen/images@drop-default-kernel-args-for-bootc-raw && \
         go mod tidy && \
         make container && \
+        cd ../../ && \
         sudo podman run \
            --rm \
            -i \
