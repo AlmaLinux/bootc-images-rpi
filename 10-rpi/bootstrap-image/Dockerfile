@@ -8,3 +8,5 @@ RUN \
   systemctl enable cloud-init && \
   sed -i 's@resize_what = "/"@resize_what = "/var"@' /usr/lib/python*/site-packages/cloudinit/config/cc_resizefs.py && \
   rm -f /usr/lib/python*/site-packages/cloudinit/config/cc_resizefs.pyc
+
+LABEL io.github.containers.bootc.kargs="console=ttyAMA0,115200 root=LABEL=root rw"
