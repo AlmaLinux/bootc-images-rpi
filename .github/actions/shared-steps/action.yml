@@ -136,11 +136,13 @@ runs:
            -f ${{ inputs.VERSION_MAJOR }}-rpi/bootstrap-image/Dockerfile \
            --build-arg=BASE=localhost/${{ env.IMAGE_NAME }}:${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }} \
            ${{ inputs.VERSION_MAJOR }}-rpi/bootstrap-image && \
+        touch /tmp/cmdline
         sudo podman run \
            --rm \
            -i \
            --privileged \
            --security-opt label=type:unconfined_t \
+           -v /tmp/cmdline:/proc/cmdline \
            -v $(pwd)/output:/output \
            -v /var/lib/containers/storage:/var/lib/containers/storage \
            quay.io/centos-bootc/bootc-image-builder:latest \
