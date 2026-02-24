@@ -19,7 +19,8 @@ postprocess:
     set -euo pipefail
 
     mkdir -p /usr/lib/bootc/install/
-    #echo 'append = ["console=tty0", "console=ttyAMA10"]' > /usr/lib/bootc/bound-kargs.d/10-consoles.toml
+    mkdir -p /usr/lib/bootc/bound-kargs.d/
+    echo 'append = ["console=tty0", "console=ttyAMA10"]' > /usr/lib/bootc/bound-kargs.d/10-consoles.toml
     cat > /usr/lib/bootc/install/20-rhel.toml << EOF
     [install]
     root-fs-type = "xfs"
