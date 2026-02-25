@@ -139,8 +139,7 @@ runs:
         touch /tmp/cmdline
         git clone https://github.com/osbuild/bootc-image-builder && \
         cd bootc-image-builder/bib && \
-        go mod edit --replace github.com/osbuild/images=github.com/supakeen/images@drop-default-kernel-args-for-bootc-raw && \
-        go mod tidy && \
+        podman run -i --rm -v $(pwd)/build registry.fedoraproject.org/fedora:42 /bin/bash -c "cd /build; dnf install -y git-core golang gpgme-devel libassuan-devel && go mod edit --replace github.com/osbuild/images=github.com/supakeen/images@drop-default-kernel-args-for-bootc-raw  && go mod tidy" && \
         cd ../ && \
         make build-container && \
         cd ../ && \
