@@ -164,7 +164,6 @@ runs:
         sudo touch /tmp/mnt/meta-data && \
         sudo cp $(pwd)/${{ inputs.VERSION_MAJOR }}-rpi/bootstrap-image/user-data /tmp/mnt/ && \
         sudo cp $(pwd)/${{ inputs.VERSION_MAJOR }}-rpi/bootstrap-image/README.txt /tmp/mnt/ && \
-        sudo umount /tmp/mnt && \
         sudo podman run \
           --rm \
           -i \
