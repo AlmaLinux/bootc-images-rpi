@@ -181,7 +181,7 @@ runs:
         sudo sfdisk -l /tmp/image-${{ env.IMAGE_NAME }}-fat-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw && \
         sudo sgdisk -m 1:2:3 /tmp/image-${{ env.IMAGE_NAME }}-fat-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw && \
         sudo sfdisk --part-type /tmp/image-${{ env.IMAGE_NAME }}-fat-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw 1 e && \
-        sudo sfdisk -l /tmp/image-${{ env.IMAGE_NAME }}3-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw
+        sudo sfdisk -l /tmp/image-${{ env.IMAGE_NAME }}-fat-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw
 
     - name: Compress os image
       shell: bash
