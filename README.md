@@ -16,6 +16,8 @@ Our images are based on the work done for [CentOS Bootc Base Images](https://git
 
 As an early and experimental project, we have not solved all problems with running AlmaLinux bootc images on the Raspberry Pis yet.
 
+In particular, be careful with low endurance drives. Not much tuning has been done yet to minimize writes, so cheep flash usb drives or sd cards can be used up fast.
+
 The project can be useful to folks despite these limitations for some use cases.
 
 Things that work:

@@ -175,14 +175,13 @@ runs:
           quay.io/almalinuxorg/almalinux-bootc-rpi:${{ env.VERSION_MAJOR }} \
           -c "mount ${LOOP}p3 /sysroot && mount ${LOOP}p2 /boot && (bootc status --format json | jq .) && grep options /boot/loader/entries/ostree-1.conf && cp -a --no-preserve=links /usr/lib/ostree-boot/* /tmp/ && rpi-bootc-bootloader version && bash -x rpi-bootc-bootloader sync" && \
         sudo umount /tmp/mnt && \
-        echo done
-# FIXME Start of FAT image support, but may not support growfs properly
-#       sudo /usr/sbin/sgdisk --typecode="1:0700" $LOOP && \
-#       sudo cp /tmp/image-${{ env.IMAGE_NAME }}-gpt-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw /tmp/image-${{ env.IMAGE_NAME }}-fat-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw && \
-#       sudo sfdisk -l /tmp/image-${{ env.IMAGE_NAME }}-fat-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw && \
-#       sudo sgdisk -m 1:2:3 /tmp/image-${{ env.IMAGE_NAME }}-fat-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw && \
-#       sudo sfdisk --part-type /tmp/image-${{ env.IMAGE_NAME }}-fat-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw 1 e && \
-#       sudo sfdisk -l /tmp/image-${{ env.IMAGE_NAME }}3-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw
+        sudo cp /tmp/image-${{ env.IMAGE_NAME }}-gpt-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw /tmp/image-${{ env.IMAGE_NAME }}-fat-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw && \
+        LOOP=$(sudo losetup -f --show -P /tmp/image-${{ env.IMAGE_NAME }}-fat-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw) && \
+        sudo /usr/sbin/sgdisk --typecode="1:0700" $LOOP && \
+        sudo sfdisk -l /tmp/image-${{ env.IMAGE_NAME }}-fat-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw && \
+        sudo sgdisk -m 1:2:3 /tmp/image-${{ env.IMAGE_NAME }}-fat-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw && \
+        sudo sfdisk --part-type /tmp/image-${{ env.IMAGE_NAME }}-fat-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw 1 e && \
+        sudo sfdisk -l /tmp/image-${{ env.IMAGE_NAME }}3-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw
 
     - name: Compress os image
       shell: bash
@@ -260,12 +259,12 @@ runs:
         name: image-${{ env.IMAGE_NAME }}-gpt-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw
         path: /tmp/image-${{ env.IMAGE_NAME }}-gpt-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw
 
-#   - name: Upload Bootstrap Image Artifact FAT
-#     uses: actions/upload-artifact@v4
-#     if: ${{ github.event_name == 'pull_request' }}
-#     with:
-#       name: image-${{ env.IMAGE_NAME }}-fat-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw
-#       path: /tmp/image-${{ env.IMAGE_NAME }}-fat-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw
+    - name: Upload Bootstrap Image Artifact FAT
+      uses: actions/upload-artifact@v4
+      if: ${{ github.event_name == 'pull_request' }}
+      with:
+        name: image-${{ env.IMAGE_NAME }}-fat-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw
+        path: /tmp/image-${{ env.IMAGE_NAME }}-fat-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw
 
     - name: Upload Bootstrap Image Artifact GPT
       uses: actions/upload-artifact@v4
@@ -274,12 +273,12 @@ runs:
         name: image-${{ env.IMAGE_NAME }}-gpt-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw.xz
         path: /tmp/image-${{ env.IMAGE_NAME }}-gpt-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw.xz
 
-#   - name: Upload Bootstrap Image Artifact FAT
-#     uses: actions/upload-artifact@v4
-#     if: ${{ github.event_name == 'release' }}
-#     with:
-#       name: image-${{ env.IMAGE_NAME }}-fat-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw.xz
-#       path: /tmp/image-${{ env.IMAGE_NAME }}-fat-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw.xz
+    - name: Upload Bootstrap Image Artifact FAT
+      uses: actions/upload-artifact@v4
+      if: ${{ github.event_name == 'release' }}
+      with:
+        name: image-${{ env.IMAGE_NAME }}-fat-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw.xz
+        path: /tmp/image-${{ env.IMAGE_NAME }}-fat-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw.xz
 
     - name: Upload Output Artifacts
       if: ${{ env.res != 0 || github.event_name == 'workflow_dispatch' }}
