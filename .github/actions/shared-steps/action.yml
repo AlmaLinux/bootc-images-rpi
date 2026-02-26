@@ -142,7 +142,7 @@ runs:
         cd ../ && \
         make build-container && \
         cd ../ && \
-        sudo podman tag localhost/${{ env.IMAGE_NAME }}:${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-bootstrap-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }} quay.io/almalinuxorg/almalinux-bootc-rpi:${{ env.VERSION_MAJOR }} 
+        sudo podman tag localhost/${{ env.IMAGE_NAME }}:${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-bootstrap-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }} quay.io/almalinuxorg/almalinux-bootc-rpi:${{ inputs.VERSION_MAJOR }} 
         sudo podman run \
            --rm \
            -i \
@@ -155,7 +155,7 @@ runs:
            --type raw \
            --rootfs xfs \
            --local \
-           quay.io/almalinuxorg/almalinux-bootc-rpi:${{ env.VERSION_MAJOR }} \
+           quay.io/almalinuxorg/almalinux-bootc-rpi:${{ inputs.VERSION_MAJOR }} \
         ls -l output/image && \
         sudo cp output/image/disk.raw /tmp/image-${{ env.IMAGE_NAME }}-gpt-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw && \
         mkdir -p /tmp/mnt && \
