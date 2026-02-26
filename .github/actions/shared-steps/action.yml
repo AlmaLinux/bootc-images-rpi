@@ -153,6 +153,7 @@ runs:
            --config /output/bib-config.toml \
            --type raw \
            --rootfs xfs \
+           --source-registry quay.io/almalinuxorg/almalinux-bootc-rpi:${{ env.VERSION_MAJOR }} \
            --local \
            localhost/${{ env.IMAGE_NAME }}:${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-bootstrap-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }} && \
         ls -l output/image && \
