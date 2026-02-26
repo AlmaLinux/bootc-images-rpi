@@ -155,7 +155,7 @@ runs:
            --type raw \
            --rootfs xfs \
            --local \
-           localhost/${{ env.IMAGE_NAME }}:${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-bootstrap-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }} && \
+           quay.io/almalinuxorg/almalinux-bootc-rpi:${{ env.VERSION_MAJOR }} \
         ls -l output/image && \
         sudo cp output/image/disk.raw /tmp/image-${{ env.IMAGE_NAME }}-gpt-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw && \
         mkdir -p /tmp/mnt && \
@@ -172,7 +172,7 @@ runs:
           -v /tmp/mnt:/tmp \
           --privileged \
           --entrypoint /bin/bash \
-          quay.io/almalinuxorg/almalinux-bootc-rpi:${{ env.VERSION_MAJOR }} \
+          localhost/${{ env.IMAGE_NAME }}:${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-bootstrap-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }} && \
           -c "mount ${LOOP}p3 /sysroot && mount ${LOOP}p2 /boot && (bootc status --format json | jq .) && grep options /boot/loader/entries/ostree-1.conf && cp -a --no-preserve=links /usr/lib/ostree-boot/* /tmp/ && rpi-bootc-bootloader version && bash -x rpi-bootc-bootloader sync" && \
         sudo umount /tmp/mnt && \
         sudo cp /tmp/image-${{ env.IMAGE_NAME }}-gpt-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw /tmp/image-${{ env.IMAGE_NAME }}-fat-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw && \
