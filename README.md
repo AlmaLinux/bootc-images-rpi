@@ -24,64 +24,21 @@ Things that work:
 * installing the raw base image onto a rpi.
 * building your own custom images based on the AlmaLinux RPI bootc image.
 * switching the rpi to a custom image with a similar kernel to one the raw base image contained
+* devicetree management
 
 Issues:
 * firmware updating - You may need to perform some manual steps or reimage the pi
-* devicetree management - the one that comes with the raw base image is used. When upgrading, it may need to be manually updated
-* raw base image is only supported on rpi5 so far
-* the initial setup requires more steps that necessary. We can make it smoother in the future
 * because of the firmware issue, bootc-image-builder alone isn't enough to build a raw boot image
 
 ## Install Instructions
 
-### Common Steps (RPI3, RPI4 and RPI5)
-
-Download and extract an image from Releases.
+Download and extract an image from Releases. GPT image if your PI supports it (RPI5, RPI4). FAT image otherwise.
 
 Flash it to an m.2 drive (RPI5 only), SD card, or USB device.
 
 You can then look at the README.txt on the storage device along with customizing user-data as needed.
 
-Move the storage device to the Pi.
-
-### RPI5 specific steps
-
-Boot it for the first time with a monitor and keyboard attached, as you will need to do a bit of initial setup.
-
-When it starts, press `ESC` to get into the UEFI menu.
-
-Select `Device Manager`
-
-Select `Raspberry Pi Configuration`
-
-Select `ACPI / Device Tree`
-
-Change `System Table Mode` to `Device Tree`
-
-Back out, save the config and reset the pi.
-
-You should now have a bootable system.
-
-## Switching images
-
-The install image comes with a special image containing cloud-init to grow the filesystem and setup the system.
-
-Once installed, switch to the upstream image by running:
-
-### AlmaLinux 10
-```
-bootc switch quay.io/almalinuxorg/almalinux-bootc-rpi:10
-```
-
-### AlmaLinux 9
-```
-bootc switch quay.io/almalinuxorg/almalinux-bootc-rpi:9
-```
-
-### AlmaLinux 10-kitten
-```
-bootc switch quay.io/almalinuxorg/almalinux-bootc-rpi:10-kitten
-```
+Move the storage device to the PI and boot.
 
 ## Project Status & News
 
