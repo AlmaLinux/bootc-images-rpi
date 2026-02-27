@@ -188,7 +188,7 @@ runs:
       if: github.event_name == 'release'
       run: |
         sudo xz /tmp/image-${{ env.IMAGE_NAME }}-gpt-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw
-        #sudo xz /tmp/image-${{ env.IMAGE_NAME }}-fat-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw
+        sudo xz /tmp/image-${{ env.IMAGE_NAME }}-fat-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw
 
     - name: Run Image
       id: run
