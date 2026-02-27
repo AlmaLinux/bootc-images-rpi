@@ -136,6 +136,13 @@ runs:
            -f ${{ inputs.VERSION_MAJOR }}-rpi/bootstrap-image/Dockerfile \
            --build-arg=BASE=localhost/${{ env.IMAGE_NAME }}:${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }} \
            ${{ inputs.VERSION_MAJOR }}-rpi/bootstrap-image && \
+        git clone https://github.com/osbuild/bootc-image-builder && \
+        cd bootc-image-builder/bib && \
+        sudo podman run -i --rm -v $(pwd):/build registry.fedoraproject.org/fedora:42 /bin/bash -c "cd /build; dnf install -y git-core golang gpgme-devel libassuan-devel && go mod edit --replace github.com/osbuild/images=github.com/kfox1111/images@kfox-test && go mod tidy" && \
+        cd ../ && \
+        make build-container && \
+        cd ../ && \
+        sudo podman tag localhost/${{ env.IMAGE_NAME }}:${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-bootstrap-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }} quay.io/almalinuxorg/almalinux-bootc-rpi:${{ inputs.VERSION_MAJOR }} 
         sudo podman run \
            --rm \
            -i \
@@ -143,75 +150,45 @@ runs:
            --security-opt label=type:unconfined_t \
            -v $(pwd)/output:/output \
            -v /var/lib/containers/storage:/var/lib/containers/storage \
-           quay.io/centos-bootc/bootc-image-builder:latest \
+           localhost/bootc-image-builder:latest \
            --config /output/bib-config.toml \
            --type raw \
            --rootfs xfs \
            --local \
-           localhost/${{ env.IMAGE_NAME }}:${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-bootstrap-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }} && \
+           quay.io/almalinuxorg/almalinux-bootc-rpi:${{ inputs.VERSION_MAJOR }} && \
         ls -l output/image && \
-        sudo cp output/image/disk.raw /tmp/image-${{ env.IMAGE_NAME }}5-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw && \
-        sudo mv output/image/disk.raw /tmp/image-${{ env.IMAGE_NAME }}4-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw && \
+        sudo cp output/image/disk.raw /tmp/image-${{ env.IMAGE_NAME }}-gpt-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw && \
         mkdir -p /tmp/mnt && \
-        LOOP=$(sudo losetup -f --show -P /tmp/image-${{ env.IMAGE_NAME }}5-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw) && \
+        LOOP=$(sudo losetup -f --show -P /tmp/image-${{ env.IMAGE_NAME }}-gpt-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw) && \
         sudo fatlabel ${LOOP}p1 "CIDATA" && \
         sudo mount ${LOOP}p1 /tmp/mnt && \
         sudo touch /tmp/mnt/meta-data && \
         sudo cp $(pwd)/${{ inputs.VERSION_MAJOR }}-rpi/bootstrap-image/user-data /tmp/mnt/ && \
         sudo cp $(pwd)/${{ inputs.VERSION_MAJOR }}-rpi/bootstrap-image/README.txt /tmp/mnt/ && \
-        cd /tmp && \
-        curl -L -O https://github.com/worproject/rpi5-uefi/releases/download/v0.3/RPi5_UEFI_Release_v0.3.zip && \
-        sudo /bin/bash -c "cd mnt && unzip ../RPi5_UEFI_Release_v0.3.zip" && \
         sudo podman run \
           --rm \
           -i \
+          -v /dev:/dev \
           -v /tmp/mnt:/tmp \
+          --privileged \
           --entrypoint /bin/bash \
-          localhost/${{ env.IMAGE_NAME }}:${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }} \
-          -c "cp /usr/share/raspberrypi2-kernel*/*/boot/bcm2712-rpi-5-b.dtb /tmp/bcm2712-rpi-5-b.dtb" && \
+          localhost/${{ env.IMAGE_NAME }}:${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-bootstrap-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }} \
+          -c "mount ${LOOP}p3 /sysroot && mount ${LOOP}p2 /boot && (bootc status --format json | jq .) && grep options /boot/loader/entries/ostree-1.conf && cp -a --no-preserve=links /usr/lib/ostree-boot/* /tmp/ && rpi-bootc-bootloader version && bash -x rpi-bootc-bootloader sync" && \
         sudo umount /tmp/mnt && \
-        cd - && \
-        LOOP=$(sudo losetup -f --show -P /tmp/image-${{ env.IMAGE_NAME }}4-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw) && \
-        sudo fatlabel ${LOOP}p1 "CIDATA" && \
-        sudo mount ${LOOP}p1 /tmp/mnt && \
-        sudo touch /tmp/mnt/meta-data && \
-        sudo cp config.txt /tmp/mnt && \
-        sudo apt update && \
-        sudo apt install -y dos2unix && \
-        sudo unix2dos /tmp/mnt/config.txt && \
-        sudo cp $(pwd)/${{ inputs.VERSION_MAJOR }}-rpi/bootstrap-image/user-data /tmp/mnt/ && \
-        sudo cp $(pwd)/${{ inputs.VERSION_MAJOR }}-rpi/bootstrap-image/README.txt /tmp/mnt/ && \
-        cd /tmp && \
-        sudo podman run \
-          --rm \
-          -i \
-          -v /tmp/mnt:/tmp \
-          --entrypoint /bin/bash \
-          localhost/${{ env.IMAGE_NAME }}:${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }} \
-          -c "cp -a --no-preserve=links /usr/share/raspberrypi2-kernel*/*/boot/*.dtb /tmp/ && cp -a --no-preserve=links /usr/lib/ostree-boot/* /tmp/" && \
-        curl -o uboot.tar.bz2 https://ftp.denx.de/pub/u-boot/u-boot-2025.07.tar.bz2 && \
-        tar -jxf uboot.tar.bz2 && \
-        cd u-boot-2025.07/ && \
-        sudo apt install -y libgnutls28-dev && \
-        make rpi_arm64_defconfig && \
-        make && \
-        ls -l && \
-        sudo cp u-boot-nodtb.bin /tmp/mnt/kernel8.img && \
-        sudo umount /tmp/mnt && \
+        sudo cp /tmp/image-${{ env.IMAGE_NAME }}-gpt-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw /tmp/image-${{ env.IMAGE_NAME }}-fat-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw && \
+        LOOP=$(sudo losetup -f --show -P /tmp/image-${{ env.IMAGE_NAME }}-fat-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw) && \
         sudo /usr/sbin/sgdisk --typecode="1:0700" $LOOP && \
-        sudo cp /tmp/image-${{ env.IMAGE_NAME }}4-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw /tmp/image-${{ env.IMAGE_NAME }}3-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw && \
-        sudo sfdisk -l /tmp/image-${{ env.IMAGE_NAME }}3-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw && \
-        sudo sgdisk -m 1:2:3 /tmp/image-${{ env.IMAGE_NAME }}3-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw && \
-        sudo sfdisk --part-type /tmp/image-${{ env.IMAGE_NAME }}3-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw 1 e && \
-        sudo sfdisk -l /tmp/image-${{ env.IMAGE_NAME }}3-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw
+        sudo sfdisk -l /tmp/image-${{ env.IMAGE_NAME }}-fat-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw && \
+        sudo sgdisk -m 1:2:3 /tmp/image-${{ env.IMAGE_NAME }}-fat-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw && \
+        sudo sfdisk --part-type /tmp/image-${{ env.IMAGE_NAME }}-fat-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw 1 e && \
+        sudo sfdisk -l /tmp/image-${{ env.IMAGE_NAME }}-fat-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw
 
     - name: Compress os image
       shell: bash
       if: github.event_name == 'release'
       run: |
-        sudo xz /tmp/image-${{ env.IMAGE_NAME }}5-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw && \
-        sudo xz /tmp/image-${{ env.IMAGE_NAME }}4-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw && \
-        sudo xz /tmp/image-${{ env.IMAGE_NAME }}3-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw
+        sudo xz /tmp/image-${{ env.IMAGE_NAME }}-gpt-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw
+        #sudo xz /tmp/image-${{ env.IMAGE_NAME }}-fat-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw
 
     - name: Run Image
       id: run
@@ -275,47 +252,33 @@ runs:
         retention-days: 1
         if-no-files-found: error
 
-    - name: Upload Bootstrap Image Artifact 5
+    - name: Upload Bootstrap Image Artifact GPT
       uses: actions/upload-artifact@v4
       if: ${{ github.event_name == 'pull_request' }}
       with:
-        name: image-${{ env.IMAGE_NAME }}5-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw
-        path: /tmp/image-${{ env.IMAGE_NAME }}5-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw
+        name: image-${{ env.IMAGE_NAME }}-gpt-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw
+        path: /tmp/image-${{ env.IMAGE_NAME }}-gpt-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw
 
-    - name: Upload Bootstrap Image Artifact 4
+    - name: Upload Bootstrap Image Artifact FAT
       uses: actions/upload-artifact@v4
       if: ${{ github.event_name == 'pull_request' }}
       with:
-        name: image-${{ env.IMAGE_NAME }}4-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw
-        path: /tmp/image-${{ env.IMAGE_NAME }}4-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw
+        name: image-${{ env.IMAGE_NAME }}-fat-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw
+        path: /tmp/image-${{ env.IMAGE_NAME }}-fat-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw
 
-    - name: Upload Bootstrap Image Artifact 3
-      uses: actions/upload-artifact@v4
-      if: ${{ github.event_name == 'pull_request' }}
-      with:
-        name: image-${{ env.IMAGE_NAME }}3-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw
-        path: /tmp/image-${{ env.IMAGE_NAME }}3-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw
-
-    - name: Upload Bootstrap Image Artifact 5
+    - name: Upload Bootstrap Image Artifact GPT
       uses: actions/upload-artifact@v4
       if: ${{ github.event_name == 'release' }}
       with:
-        name: image-${{ env.IMAGE_NAME }}5-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw.xz
-        path: /tmp/image-${{ env.IMAGE_NAME }}5-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw.xz
+        name: image-${{ env.IMAGE_NAME }}-gpt-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw.xz
+        path: /tmp/image-${{ env.IMAGE_NAME }}-gpt-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw.xz
 
-    - name: Upload Bootstrap Image Artifact 4
+    - name: Upload Bootstrap Image Artifact FAT
       uses: actions/upload-artifact@v4
       if: ${{ github.event_name == 'release' }}
       with:
-        name: image-${{ env.IMAGE_NAME }}4-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw.xz
-        path: /tmp/image-${{ env.IMAGE_NAME }}4-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw.xz
-
-    - name: Upload Bootstrap Image Artifact 3
-      uses: actions/upload-artifact@v4
-      if: ${{ github.event_name == 'release' }}
-      with:
-        name: image-${{ env.IMAGE_NAME }}3-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw.xz
-        path: /tmp/image-${{ env.IMAGE_NAME }}3-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw.xz
+        name: image-${{ env.IMAGE_NAME }}-fat-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw.xz
+        path: /tmp/image-${{ env.IMAGE_NAME }}-fat-${{ inputs.VERSION_MAJOR }}${{ env.VERSION_MINOR }}-${{ inputs.DATE_STAMP }}-${{ env.CLEAN_ARCH }}.raw.xz
 
     - name: Upload Output Artifacts
       if: ${{ env.res != 0 || github.event_name == 'workflow_dispatch' }}

@@ -1,3 +1,23 @@
-[[customizations.filesystem]]
+[[customizations.disk.partitions]]
+type = "plain"
+label = "CIDATA"
+mountpoint = "/boot/efi"
+fs_type = "vfat"
+minsize = "1 GiB"
+
+[[customizations.disk.partitions]]
+type = "plain"
+label = "boot"
+mountpoint = "/boot"
+fs_type = "xfs"
+minsize = "1 GiB"
+
+[[customizations.disk.partitions]]
+type = "plain"
+label = "root"
 mountpoint = "/"
-size = "4GiB"
+fs_type = "xfs"
+minsize = "4 GiB"
+
+#[customizations.kernel]
+#append = "console=tty0 console=ttyAMA10"
