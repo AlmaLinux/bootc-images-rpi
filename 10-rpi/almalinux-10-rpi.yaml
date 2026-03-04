@@ -17,6 +17,12 @@ postprocess:
     #!/usr/bin/env bash
 
     set -euo pipefail
+    if [ ! -f /usr//lib/firmware/brcm/brcmfmac43436s-sdio.bin  ]; then
+      curl -s -o /usr//lib/firmware/brcm/brcmfmac43436s-sdio.bin https://github.com/RPi-Distro/firmware-nonfree/raw/refs/heads/bullseye/debian/config/brcm80211/brcm/brcmfmac43436s-sdio.bin
+    ]
+    if [ ! -f /usr/lib/firmware/brcm/brcmfmac43430-sdio.raspberrypi,model-zero-2-w.bin ]; then
+      ln -s /usr//lib/firmware/brcm/brcmfmac43436s-sdio.bin /usr/lib/firmware/brcm/brcmfmac43430-sdio.raspberrypi,model-zero-2-w.bin
+    fi
 
     mkdir -p /usr/lib/bootc/install/
     cat > /usr/lib/bootc/install/20-rhel.toml << EOF
