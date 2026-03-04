@@ -14,7 +14,7 @@ packages:
 
 postprocess:
   - |
-    #!/usr/bin/env bash
+    #!/usr/bin/env bash -x
 
     set -euo pipefail
     if [ ! -f /usr//lib/firmware/brcm/brcmfmac43436s-sdio.bin ]; then
