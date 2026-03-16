@@ -40,6 +40,12 @@ You can then look at the README.txt on the storage device along with customizing
 
 Move the storage device to the PI and boot.
 
+It has been tested on:
+* several rpi5 versions including 2g, 8g, and 16g
+* rpi4
+* rpi3
+* rpi zero 2 w
+
 ## Project Status & News
 
 * **[2025-06-10]** Forked repo for RPI specific images
