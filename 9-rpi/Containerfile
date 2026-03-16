@@ -24,7 +24,7 @@ RUN \
   curl -L -o firmware.tar.gz https://github.com/RPi-Distro/firmware-nonfree/archive/223ccf3a3ddb11b3ea829749fbbba4d65b380897/firmware-nonfree-223ccf3a3ddb11b3ea829749fbbba4d65b380897.tar.gz && \
   tar -zxvf firmware.tar.gz && \
   ln -s cyfmac43455-sdio-standard.bin firmware-nonfree-223ccf3a3ddb11b3ea829749fbbba4d65b380897/debian/config/brcm80211/cypress/cyfmac43455-sdio.bin && \
-  rm -f /target-rootfs/usr/lib/firmware/brcm/brcmfmac43430b0-sdio.raspberrypi,model-zero-2-w.txt* && \
+  rm -f /target-rootfs/usr/lib/firmware/brcm/brcmfmac43430-sdio.raspberrypi,model-zero-2-w.txt* && \
   install -c -m 644 firmware-nonfree-223ccf3a3ddb11b3ea829749fbbba4d65b380897/debian/config/brcm80211/brcm/brcmfmac43436s-sdio.bin /target-rootfs/usr/lib/firmware/brcm/ && \
   install -c -m 644 firmware-nonfree-223ccf3a3ddb11b3ea829749fbbba4d65b380897/debian/config/brcm80211/brcm/brcmfmac43430-sdio.raspberrypi,model-zero-2-w.bin /target-rootfs/usr/lib/firmware/brcm/ && \
   install -c -m 644 firmware-nonfree-223ccf3a3ddb11b3ea829749fbbba4d65b380897/debian/config/brcm80211/brcm/brcmfmac43430b0-sdio.raspberrypi,model-zero-2-w.txt /target-rootfs/usr/lib/firmware/brcm/ && \
