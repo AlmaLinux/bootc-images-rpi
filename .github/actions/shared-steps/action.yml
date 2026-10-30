@@ -63,6 +63,22 @@ runs:
         echo "version-id=$(echo "$INFO" | grep "^VERSION_ID=" | cut -d'=' -f2 | tr -d '"')" >> $GITHUB_OUTPUT
         echo "long-version=$(echo "$INFO" | grep "^VERSION_ID=" | cut -d'=' -f2 | tr -d '"').${{ inputs.DATE_STAMP }}.0" >> $GITHUB_OUTPUT
 
+    - name: Relax AppArmor user namespace restrictions
+      if: ${{ env.res != 0 || github.event_name == 'workflow_dispatch' }}
+      shell: bash
+      run: |
+        # Ubuntu 26.04 restricts user namespaces via AppArmor, which strips
+        # capabilities from rpm-ostree's bwrap script sandbox during compose
+        # (groupadd: cannot open /etc/gshadow: Permission denied).
+        set -x
+        sudo podman version || true
+        sysctl kernel.apparmor_restrict_unprivileged_userns || true
+        sudo aa-status 2>/dev/null | grep -iE 'bwrap|userns' || true
+        sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+        if [ -e /etc/apparmor.d/bwrap-userns-restrict ]; then
+          sudo apparmor_parser -R /etc/apparmor.d/bwrap-userns-restrict || true
+        fi
+
     - name: Build image
       id: build
       if: ${{ env.res != 0 || github.event_name == 'workflow_dispatch' }}
@@ -98,6 +114,11 @@ runs:
 
         echo "image-id=$(cat /tmp/image-id)" >> $GITHUB_OUTPUT
 
+    - name: Show AppArmor denials
+      if: failure()
+      shell: bash
+      run: sudo dmesg | grep -iE 'apparmor="?DENIED' | tail -50 || true
+
     - name: rechunk image
       id: rechunk
       if: ${{ env.res != 0 || github.event_name == 'workflow_dispatch' }}
@@ -129,6 +150,8 @@ runs:
       env:
         IMAGE_ID: ${{ steps.rechunk.outputs.image-id }}
       run: |
+        # Pinned to the last bootc-image-builder built from its own sources (2026-06-18).
+        # Newer :latest is an image-builder shim that dropped --no-default-kernel-args.
         mkdir -p output && \
         cp bib-config.toml output/ && \
         sudo podman build \
@@ -144,7 +167,7 @@ runs:
            --security-opt label=type:unconfined_t \
            -v $(pwd)/output:/output \
            -v /var/lib/containers/storage:/var/lib/containers/storage \
-           quay.io/centos-bootc/bootc-image-builder:latest \
+           quay.io/centos-bootc/bootc-image-builder@sha256:2b52843ea2bfda73b0a08d97e76b734393b1d3a804681b9fabb26723bd3a2f0b \
            --no-default-kernel-args \
            --config /output/bib-config.toml \
            --type raw \

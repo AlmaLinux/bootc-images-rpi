@@ -21,6 +21,7 @@ image:
 	$(PODMAN) build \
 		--platform=$(PLATFORM) \
 		--security-opt=label=disable \
+		--security-opt=apparmor=unconfined \
 		--cap-add=all \
 		--device /dev/fuse \
 		--iidfile /tmp/image-id \
